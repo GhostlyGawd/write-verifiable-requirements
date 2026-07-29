@@ -1,5 +1,5 @@
 version: 2
-updated: "2026-07-28"
+updated: "2026-07-29"
 purpose: >-
   Verified requirements-lifecycle rules used by the skill and checker. These
   rules do not replace project, legal, safety, contractual, NASA procedural, or
@@ -135,6 +135,14 @@ rules:
     requirement: Preserve authoritative values, units, conditions, permissions, prohibitions, and safety intent.
     basis: NASA-SEH-REV2 sections 4.2 and 6.2; Appendix C, correctness
     enforcement: automated_and_human
+  - id: REQ-FID-002
+    requirement: Record each source-to-requirement transformation and do not add, remove, narrow, or broaden a condition without its source authority.
+    basis: NASA-SEH-REV2 sections 4.2.4 and 6.2; Appendix C, C.4 Requirements Validation Checklist, Correctness and Traceability
+    enforcement: structured_human
+  - id: REQ-CONFLICT-001
+    requirement: Keep conflicting controlling statements unresolved until the declared decision authority resolves the conflict.
+    basis: NASA-SEH-REV2 sections 4.1.1.2, 4.2.1.2, and 6.2.2; Appendix C, C.4 Requirements Validation Checklist, Consistency
+    enforcement: structured_human
   - id: REQ-RAT-001
     requirement: Record the requirement rationale and explicit assumptions.
     basis: NASA-SEH-REV2 sections 4.2.4 and 4.3.2.2
@@ -147,6 +155,10 @@ rules:
     requirement: Define the verification method, objective success criteria, and planned or actual evidence.
     basis: NASA-SEH-REV2 sections 4.2.4, 5.3, and Appendix D
     enforcement: automated
+  - id: REQ-VRF-003
+    requirement: Do not add a grace period, population, exception, threshold, condition, or assumption to a verification method unless an identified source authorizes it.
+    basis: NASA-SEH-REV2 sections 4.2.4 and 5.3; Appendix C, C.4 Requirements Validation Checklist, Correctness, Traceability, and Verifiability/Testability
+    enforcement: structured_human
   - id: REQ-VALUE-001
     requirement: State applicable values, units, limits, tolerances, margins, and don't-care conditions.
     basis: NASA-SEH-REV2 Appendix C, C.2 Editorial Checklist, Product Requirement; C.4 Requirements Validation Checklist, Performance and Data Usage; Appendix L

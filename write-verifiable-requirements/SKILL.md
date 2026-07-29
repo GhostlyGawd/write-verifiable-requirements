@@ -8,15 +8,20 @@ description: Write, rewrite, review, validate, and trace clear, atomic, testable
 Preserve source intent. Expose missing decisions. Do not infer product, safety,
 legal, technical, tailoring, or approval decisions.
 
+Set `<SKILL_ROOT>` to the absolute directory that contains this `SKILL.md`.
+Resolve all skill files and commands from `<SKILL_ROOT>`, not from the user's
+current working directory.
+
 ## Required workflow
 
-1. Run `python scripts/manage_references.py status`. Load
+1. Select `write`, `rewrite`, `review`, or `trace`.
+2. Select the language profile separately from the lifecycle profile.
+3. Run `python <SKILL_ROOT>/scripts/manage_references.py status`. Load
    [reference-manifest.json](references/reference-manifest.json),
-   [requirements-rules.yaml](references/requirements-rules.yaml),
-   [requirements-schema.md](references/requirements-schema.md), and
-   [nasa-reference-coverage.yaml](references/nasa-reference-coverage.yaml).
-2. Select `write`, `rewrite`, `review`, or `trace`.
-3. Select the language profile separately from the lifecycle profile.
+   [requirements-rules.yaml](references/requirements-rules.yaml), and
+   [requirements-schema.md](references/requirements-schema.md). Load
+   [nasa-reference-coverage.yaml](references/nasa-reference-coverage.yaml) and
+   the NASA references only when the selected lifecycle profile requires them.
 4. Confirm source authorities and precedence, objective, boundary, readers,
    product layer, lifecycle phase, controlled terms, protected values,
    constraints, and approval authority.
@@ -31,17 +36,20 @@ legal, technical, tailoring, or approval decisions.
    binding requirements.
 7. Separate product requirements from rationale, design, plans, personnel
    tasks, examples, verification procedures, and validation activities.
-8. Give each requirement one stable identifier, subject, obligation, source,
+8. Record a source-transformation mapping before drafting. Show the exact
+   source clause, the proposed requirement interpretation, all added or removed
+   conditions, and the authority for each transformation.
+9. Give each requirement one stable identifier, subject, obligation, source,
    owner, rationale, parent trace, allocation, and objective verification plan.
-9. Record ambiguity, conflicts, missing decisions, interfaces, derived
+10. Record ambiguity, conflicts, missing decisions, interfaces, derived
    requirements, completeness assessments, baselines, and changes. Do not hide
    them in rewritten text.
-10. Keep requirement verification separate from product validation.
-11. Run `python scripts/check_requirements.py INPUT --format both --output-dir OUTPUT_DIR`.
-12. Correct deterministic failures and repeat the check.
-13. Obtain genuine human reviews for every required dimension against the
+11. Keep requirement verification separate from product validation.
+12. Run `python <SKILL_ROOT>/scripts/check_requirements.py INPUT --format both --output-dir OUTPUT_DIR`.
+13. Correct deterministic failures and repeat the check.
+14. Obtain genuine human reviews for every required dimension against the
    reported content digest.
-14. Record genuine baseline approval from the declared authority, rerun the
+15. Record genuine baseline approval from the declared authority, rerun the
    checker, and release clean text only when it reports
    `BASELINED — AUTHORIZED APPROVAL RECORDED`.
 
@@ -59,6 +67,13 @@ Use project-defined precedence when authorized. Otherwise use:
 
 Stop when controlling sources conflict. Quote the conflict, identify its
 decision authority, and keep the affected item unresolved.
+
+Do not silently combine source clauses. Keep materially different
+interpretations unresolved. If a lower-precedence source prevents a
+higher-precedence requirement from being satisfied, record a source conflict;
+do not reduce it to a feasibility note. Do not add an unsourced grace period,
+population, exception, threshold, condition, or assumption to a requirement or
+verification method.
 
 ## Profile and authority rules
 
@@ -111,16 +126,33 @@ Scripts verify structure and selected patterns only. They do not prove semantic
 correctness, completeness, feasibility, safety, technical validation, or NASA
 procedural compliance.
 
+Read the report fields `state_code`, `operation_succeeded`, and
+`release_permitted`. Do not infer release permission from the process exit
+code.
+
+## Cross-skill routing
+
+- Use `analyze-competing-hypotheses` for competing factual or causal
+  explanations. Treat its judgments as assumptions until an authority accepts
+  them as requirement sources.
+- Resolve requirement intent before an ASD-STE100 rewrite. Protect normative
+  keywords, values, units, conditions, permissions, and prohibitions.
+- After an ASD-STE100 wording change, rerun the requirement checks and bind the
+  result to the new content digest.
+
 ## Reference operations
 
 - Normal writing and review use verified local files. Do not access the network
   during ordinary skill execution.
 - If `status` fails, the `general` profile can continue without a NASA claim.
   Block the affected NASA profile.
-- Run `python scripts/manage_references.py repair` only for an explicit repair.
+- Run `python <SKILL_ROOT>/scripts/manage_references.py repair` only for an
+  explicit repair.
   It downloads only approved bytes from manifest-listed HTTPS hosts, verifies
   size, PDF signature, and SHA-256, and installs atomically.
 - Never change a manifest digest automatically. Stage and review new NASA bytes,
   update the rule mapping, and rerun all acceptance tests before approval.
 - A matching PDF digest proves document identity. It does not prove that an NPR
   is current, applicable, tailored, or satisfied.
+- Run `python <SKILL_ROOT>/scripts/check_requirements.py --emit-template` to
+  create a structured starting artifact. A template is not approval evidence.

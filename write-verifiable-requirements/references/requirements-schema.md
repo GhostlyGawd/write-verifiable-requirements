@@ -21,6 +21,9 @@ approve tailoring or make an organizational compliance decision.
 - `title`, `objective`, `system_boundary`, `intended_readers`
 - `lifecycle_scope`: `{product_layer, lifecycle_phase, included_processes, excluded_processes}`
 - `source_authorities`: ordered `{id, title, precedence}` records
+- `source_transformations`: records that map an exact source clause to a
+  proposed requirement interpretation, list each added or removed condition,
+  and identify the authority for the transformation
 - `controlled_terms`: `{term, definition, source, approved}` records
 - `protected_values`: literal values that must not change
 - `approval_authority`: `{approver_id, role, authority_source}` records
@@ -81,6 +84,10 @@ Each requirement has:
 - `performing_organization`
 - `results_state`: `PLANNED`, `PASS`, `FAIL`, or `NOT_RUN`
 - `evidence`
+- `source_basis`: source identifiers and exact source locations that authorize
+  the success criteria, population, threshold, conditions, and exceptions
+- `introduced_constraints`: each verification-only constraint and its
+  authorizing source; use an empty list when none are introduced
 - `discrepancies`: list of discrepancy, nonconformance, waiver, or deviation IDs
 - `configuration`: verified product or artifact version
 
