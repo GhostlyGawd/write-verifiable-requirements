@@ -85,6 +85,8 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("<SKILL_ROOT>/scripts/check_requirements.py", skill)
         self.assertIn("Do not silently combine source clauses.", skill)
         self.assertIn("source-transformation mapping", skill)
+        self.assertIn("authorized; none was added", skill)
+        self.assertIn("Do not convert absence of current authority", skill)
         self.assertIn("REQ-FID-002", rules)
         self.assertIn("REQ-CONFLICT-001", rules)
         self.assertIn("REQ-VRF-003", rules)

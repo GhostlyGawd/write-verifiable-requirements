@@ -60,3 +60,15 @@ source authenticity when source bytes are unavailable. A response digest
 records the bytes observed by `check-current`; it is not a NASA signature.
 Human reviewers remain responsible for source fidelity, technical meaning,
 applicability, feasibility, safety, verification adequacy, and approval.
+
+## Blind retest correction
+
+A fresh agent preserved the contract and security obligations, kept the
+architecture limitation unresolved, and did not add latency or staleness
+criteria. An independent reviewer found that “no exception is permitted” could
+be read as a permanent prohibition even though the sources established only
+that no exception was currently authorized.
+
+The skill now requires the bounded statement “not currently authorized; none
+was added” and prohibits converting absent authority into a permanent
+prohibition. The repository contract test pins this distinction.

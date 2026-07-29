@@ -74,7 +74,9 @@ interpretations unresolved. If a lower-precedence source prevents a
 higher-precedence requirement from being satisfied, record a source conflict;
 do not reduce it to a feasibility note. Do not add an unsourced grace period,
 population, exception, threshold, condition, or assumption to a requirement or
-verification method.
+verification method. Describe an absent authority as “not currently
+authorized; none was added.” Do not convert absence of current authority into a
+permanent prohibition such as “not permitted.”
 
 ## Profile and authority rules
 
