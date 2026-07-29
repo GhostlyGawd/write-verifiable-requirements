@@ -12,6 +12,7 @@ import shutil
 import sys
 import uuid
 from dataclasses import asdict, dataclass
+from importlib.metadata import PackageNotFoundError, version as package_version
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -164,6 +165,18 @@ def install_skill(
     codex_home: Path,
     dry_run: bool = False,
 ) -> InstallResult:
+    try:
+        yaml_version = package_version("PyYAML")
+    except PackageNotFoundError as exc:
+        raise InstallError(
+            "PyYAML is required. Run: "
+            "python -m pip install --require-hashes -r requirements.txt"
+        ) from exc
+    if yaml_version.split(".", 1)[0] != "6":
+        raise InstallError(
+            f"PyYAML 6.x is required; found {yaml_version}. "
+            "Install the repository's hash-pinned dependency."
+        )
     validate_skill_source(source)
     source_digest = tree_digest(source)
     skills_dir = ensure_install_boundary(codex_home)

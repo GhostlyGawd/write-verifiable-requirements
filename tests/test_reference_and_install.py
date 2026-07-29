@@ -269,6 +269,16 @@ class ReferenceManagerTests(unittest.TestCase):
 
 
 class InstallerTests(unittest.TestCase):
+    def test_missing_yaml_dependency_blocks_install(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            with mock.patch.object(
+                INSTALLER,
+                "package_version",
+                side_effect=INSTALLER.PackageNotFoundError,
+            ):
+                with self.assertRaises(INSTALLER.InstallError):
+                    INSTALLER.install_skill(SKILL, Path(directory) / "codex")
+
     def test_fresh_install_and_idempotent_reinstall(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             codex_home = Path(directory) / "codex"

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">Agent installation and execution flow</title>
+  <desc id="desc">A Codex agent verifies and installs the skill, selects a general or NASA profile, checks local references, and checks NODIS separately for current NPR work.</desc>
+  <defs>
+    <style>
+      .background { fill: #f7f8fa; }
+      .box { fill: #ffffff; stroke: #253858; stroke-width: 2; rx: 14; }
+      .decision { fill: #eef4ff; stroke: #1f5fbf; stroke-width: 2; }
+      .blocked { fill: #fff3f0; stroke: #b42318; stroke-width: 2; rx: 14; }
+      .success { fill: #ecfdf3; stroke: #067647; stroke-width: 2; rx: 14; }
+      .text { font-family: Arial, sans-serif; font-size: 21px; fill: #172b4d; text-anchor: middle; }
+      .small { font-family: Arial, sans-serif; font-size: 17px; fill: #344054; text-anchor: middle; }
+      .arrow { stroke: #475467; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .label { font-family: Arial, sans-serif; font-size: 16px; fill: #475467; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#475467"/>
+    </marker>
+  </defs>
+  <rect class="background" width="1200" height="680"/>
+  <rect class="box" x="35" y="60" width="210" height="100"/>
+  <text class="text" x="140" y="102">Agent receives</text>
+  <text class="text" x="140" y="130">repository URL</text>
+  <rect class="box" x="295" y="60" width="230" height="100"/>
+  <text class="text" x="410" y="102">Verify references</text>
+  <text class="small" x="410" y="132">and stage installation</text>
+  <rect class="success" x="575" y="60" width="210" height="100"/>
+  <text class="text" x="680" y="102">Atomic install</text>
+  <text class="small" x="680" y="132">or safe no-op</text>
+  <polygon class="decision" points="925,42 1085,110 925,178 765,110"/>
+  <text class="text" x="925" y="103">Lifecycle</text>
+  <text class="text" x="925" y="130">profile?</text>
+
+  <rect class="success" x="785" y="255" width="250" height="100"/>
+  <text class="text" x="910" y="296">General profile</text>
+  <text class="small" x="910" y="326">No network required</text>
+
+  <rect class="box" x="370" y="255" width="300" height="100"/>
+  <text class="text" x="520" y="296">NASA profile</text>
+  <text class="small" x="520" y="326">Verify pinned local bytes</text>
+
+  <polygon class="decision" points="520,395 690,455 520,515 350,455"/>
+  <text class="text" x="520" y="448">Current NPR</text>
+  <text class="text" x="520" y="475">assessment?</text>
+
+  <rect class="success" x="35" y="405" width="250" height="100"/>
+  <text class="text" x="160" y="446">Handbook work</text>
+  <text class="small" x="160" y="476">Use verified local PDF</text>
+
+  <rect class="box" x="790" y="405" width="250" height="100"/>
+  <text class="text" x="915" y="446">Check NODIS</text>
+  <text class="small" x="915" y="476">Separate currentness gate</text>
+
+  <rect class="blocked" x="1080" y="405" width="100" height="100"/>
+  <text class="small" x="1130" y="442">Block claim</text>
+  <text class="small" x="1130" y="468">if status</text>
+  <text class="small" x="1130" y="492">is unknown</text>
+
+  <rect class="success" x="790" y="555" width="250" height="90"/>
+  <text class="text" x="915" y="593">Continue NPR</text>
+  <text class="small" x="915" y="620">evidence preparation</text>
+
+  <path class="arrow" d="M245 110 H295"/>
+  <path class="arrow" d="M525 110 H575"/>
+  <path class="arrow" d="M785 110 H765"/>
+  <path class="arrow" d="M925 178 V255"/>
+  <text class="label" x="940" y="220">general</text>
+  <path class="arrow" d="M820 155 C760 205 690 250 670 280"/>
+  <text class="label" x="720" y="226">NASA</text>
+  <path class="arrow" d="M520 355 V395"/>
+  <path class="arrow" d="M350 455 H285"/>
+  <text class="label" x="310" y="443">no</text>
+  <path class="arrow" d="M690 455 H790"/>
+  <text class="label" x="735" y="443">yes</text>
+  <path class="arrow" d="M1040 455 H1080"/>
+  <text class="label" x="1047" y="435">fail</text>
+  <path class="arrow" d="M915 505 V555"/>
+  <text class="label" x="930" y="535">pass</text>
+</svg>
