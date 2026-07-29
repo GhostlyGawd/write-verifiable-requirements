@@ -84,3 +84,19 @@ revision-bound. The checker now rejects placeholder source identity values,
 including a full bounded absence statement used in place of an identity. It
 also requires the complete bounded absence statement in every separate
 `decision_authority` field. Two regression tests reproduce these failures.
+
+## Final independent blind review
+
+A fresh agent produced a requirements package with content digest
+`sha256:02efc12740fda698a7da65b3c5ce6afa1e200185bf06420e249a791d6a350713`.
+The package preserved C-21 exactly, kept A-11 as an unresolved architecture
+applicability conflict, kept P-3 nonbinding, added no population, cutoff, grace
+period, exception, latency threshold, sample, or verification condition, and
+kept verification separate from validation. It reported all missing source
+revisions, bytes, digests, human reviews, and baseline approval.
+
+A separate agent reviewed the raw YAML and digest-matched JSON and Markdown
+reports. The reviewer returned `PASS` with no material semantic defect. A fresh
+checker run reproduced the same digest, `CHECK_FAILED` state, and blocked
+release decision. This independent agent review does not create human
+requirements review or authorized baseline approval.
