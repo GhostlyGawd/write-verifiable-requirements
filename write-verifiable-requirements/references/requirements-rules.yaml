@@ -1,0 +1,247 @@
+version: 2
+updated: "2026-07-28"
+purpose: >-
+  Verified requirements-lifecycle rules used by the skill and checker. These
+  rules do not replace project, legal, safety, contractual, NASA procedural, or
+  approval authorities.
+identifier_note: >-
+  Rule IDs in this file are local trace identifiers. They are not NASA or IETF
+  rule numbers. Each rule gives its controlling source location.
+
+sources:
+  - id: NASA-SEH-REV2
+    title: NASA Systems Engineering Handbook
+    identifier: NASA/SP-2016-6105 Rev 2
+    authority_type: guidance
+    bundled_file: nasa-systems-engineering-handbook-rev2.pdf
+    official_url: https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf
+  - id: NPR-7123.1D-C2
+    title: NASA Systems Engineering Processes and Requirements
+    identifier: NPR 7123.1D Updated with Change 2
+    authority_type: mandatory_for_applicable_nasa_work
+    bundled_file: npr-7123.1d-change-2.pdf
+    current_authority_url: https://nodis3.gsfc.nasa.gov/displayDir.cfm?Internal_ID=N_PR_7123_001D_
+  - id: RFC-2119
+    title: Key words for use in RFCs to Indicate Requirement Levels
+    official_url: https://www.rfc-editor.org/rfc/rfc2119.html
+  - id: RFC-8174
+    title: Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words
+    official_url: https://www.rfc-editor.org/rfc/rfc8174.html
+
+profile_model:
+  language_profiles:
+    shall:
+      use: Product requirements that express a binding obligation with shall.
+      basis: NASA-SEH-REV2 Appendix C, C.1 Use of Correct Terms
+    bcp14:
+      use: Specifications that use uppercase BCP 14 requirement levels.
+      basis: RFC-2119 and RFC-8174
+  lifecycle_profiles:
+    general:
+      use: Requirements artifacts without a NASA lifecycle claim.
+    nasa-se-handbook-rev2:
+      use: Requirements-lifecycle artifacts reviewed against applicable handbook guidance.
+      claim_limit: Conformance to this profile is not NASA procedural compliance.
+    nasa-npr-7123.1d:
+      use: Evidence preparation for applicable NASA work.
+      claim_limit: >-
+        Text checks cannot establish NPR compliance. Current NODIS status,
+        applicability, the complete compliance matrix, approved tailoring or
+        customization, the SEMP or equivalent, and ETA decisions remain under
+        authorized NASA governance.
+
+rules:
+  - id: PROFILE-001
+    requirement: Select the language profile separately from the lifecycle profile and keep authority claims within the selected profile boundary.
+    basis: NASA-SEH-REV2 sections 1.1 and 1.2; RFC-8174
+    enforcement: automated
+  - id: REQ-CTX-001
+    requirement: Define the objective, system boundary, readers, product layer, lifecycle phase, included processes, excluded processes, source authorities, and precedence.
+    basis: NASA-SEH-REV2 sections 1.2, 3, 4.1, and 4.2
+    enforcement: automated_and_human
+  - id: LANG-SHALL-001
+    requirement: Use shall for a binding product requirement, will for a statement of fact, and should for a nonbinding goal.
+    basis: NASA-SEH-REV2 Appendix C, C.1 Use of Correct Terms
+    enforcement: automated_and_human
+  - id: LANG-BCP14-001
+    requirement: Use uppercase BCP 14 keywords only with their defined normative meanings.
+    basis: RFC-2119 and RFC-8174
+    enforcement: automated_and_human
+  - id: LANG-BCP14-002
+    requirement: Include the RFC 2119 and RFC 8174 BCP 14 notice in a BCP 14 document.
+    basis: RFC-8174
+    enforcement: automated
+  - id: REQ-FORM-001
+    requirement: Write one grammatically complete requirement with one subject and one obligation.
+    basis: NASA-SEH-REV2 Appendix C, C.2 Editorial Checklist; C.3 General Goodness Checklist; C.4 Requirements Validation Checklist, Clarity
+    enforcement: automated_and_human
+  - id: REQ-FORM-002
+    requirement: Use active voice and place the responsible product before the required action.
+    basis: NASA-SEH-REV2 Appendix C, C.2 Editorial Checklist, Personnel Requirement
+    enforcement: human
+  - id: REQ-FORM-003
+    requirement: Use consistent terminology for the product and lower-level entities.
+    basis: NASA-SEH-REV2 Appendix C, C.2 Editorial Checklist, Product Requirement
+    enforcement: automated_and_human
+  - id: REQ-FORM-004
+    requirement: State a requirement positively when a positive statement preserves the intent.
+    basis: NASA-SEH-REV2 Appendix C, C.3 General Goodness Checklist
+    enforcement: human
+  - id: REQ-FORM-005
+    requirement: Put product requirements in the requirements artifact and personnel or task obligations in the applicable plan or statement of work.
+    basis: NASA-SEH-REV2 Appendix C, C.2 Editorial Checklist and C.4 Requirements Validation Checklist, Compliance; Appendix P
+    enforcement: human
+  - id: REQ-FORM-006
+    requirement: Keep descriptions of operations in the ConOps and out of product requirements.
+    basis: NASA-SEH-REV2 Appendix C, Editorial Checklist and Requirements Validation Checklist
+    enforcement: human
+  - id: REQ-EDIT-001
+    requirement: Make the requirement grammatically correct and free of spelling, typographical, and punctuation errors, and apply authorized project template and style rules.
+    basis: NASA-SEH-REV2 Appendix C, General Goodness Checklist
+    enforcement: human
+  - id: REQ-LOCATION-001
+    requirement: Put the requirement in the proper document section.
+    basis: NASA-SEH-REV2 Appendix C, General Goodness Checklist
+    enforcement: human
+  - id: REQ-CLR-001
+    requirement: Make each requirement clear, unambiguous, concise, and understandable.
+    basis: NASA-SEH-REV2 Appendix C, C.4 Requirements Validation Checklist, Clarity
+    enforcement: automated_and_human
+  - id: REQ-STRUCT-001
+    requirement: Use the declared structured artifact schema so required evidence can be checked and traced.
+    basis: NASA-SEH-REV2 sections 4.2, 5.3, 5.4, and 6.2
+    enforcement: automated
+  - id: PROFILE-002
+    requirement: Do not mix normative keywords from different language profiles in one requirement.
+    basis: NASA-SEH-REV2 Appendix C; RFC-2119 and RFC-8174
+    enforcement: automated
+  - id: REQ-AMB-001
+    requirement: Do not use ambiguous pronouns, open-ended phrases, vague modifiers, or undefined terms.
+    basis: NASA-SEH-REV2 Appendix C, C.4 Requirements Validation Checklist, Clarity and Verifiability/Testability
+    enforcement: automated_and_human
+  - id: REQ-ATM-001
+    requirement: Put one requirement in each statement.
+    basis: NASA-SEH-REV2 Appendix C, C.4 Requirements Validation Checklist, Clarity
+    enforcement: automated_and_human
+  - id: REQ-NEC-001
+    requirement: Include only necessary requirements and do not add unauthorized capability or design.
+    basis: NASA-SEH-REV2 Appendix C, C.4 Requirements Validation Checklist, Traceability; section 6.2
+    enforcement: human
+  - id: REQ-IMP-001
+    requirement: State the required result and avoid an implementation constraint unless an authority requires it.
+    basis: NASA-SEH-REV2 Appendix C, C.2 Editorial Checklist, Product Requirement; C.4 Requirements Validation Checklist, Compliance
+    enforcement: human
+  - id: REQ-FID-001
+    requirement: Preserve authoritative values, units, conditions, permissions, prohibitions, and safety intent.
+    basis: NASA-SEH-REV2 sections 4.2 and 6.2; Appendix C, correctness
+    enforcement: automated_and_human
+  - id: REQ-RAT-001
+    requirement: Record the requirement rationale and explicit assumptions.
+    basis: NASA-SEH-REV2 sections 4.2.4 and 4.3.2.2
+    enforcement: automated_and_human
+  - id: REQ-VRF-001
+    requirement: Make each requirement feasible and objectively verifiable.
+    basis: NASA-SEH-REV2 section 4.2.4.5; Appendix C, C.4 Requirements Validation Checklist, Correctness and Verifiability/Testability
+    enforcement: automated_and_human
+  - id: REQ-VRF-002
+    requirement: Define the verification method, objective success criteria, and planned or actual evidence.
+    basis: NASA-SEH-REV2 sections 4.2.4, 5.3, and Appendix D
+    enforcement: automated
+  - id: REQ-VALUE-001
+    requirement: State applicable values, units, limits, tolerances, margins, and don't-care conditions.
+    basis: NASA-SEH-REV2 Appendix C, C.2 Editorial Checklist, Product Requirement; C.4 Requirements Validation Checklist, Performance and Data Usage; Appendix L
+    enforcement: automated_and_human
+  - id: REQ-SRC-001
+    requirement: Give each requirement a unique identifier and trace it to its definitive source.
+    basis: NASA-SEH-REV2 sections 4.2.4 and 6.2.2.1; Appendix C, C.4 Requirements Validation Checklist, Traceability
+    enforcement: automated
+  - id: REQ-META-001
+    requirement: Record type, level, owner, rationale, assumptions, parent trace, allocation, verification method, verification lead, and verification level.
+    basis: NASA-SEH-REV2 section 4.2.4
+    enforcement: automated
+  - id: REQ-LEVEL-001
+    requirement: Put the requirement at the correct product level.
+    basis: NASA-SEH-REV2 Appendix C, C.4 Requirements Validation Checklist, Compliance; sections 4.3 and 6.2
+    enforcement: human
+  - id: REQ-TBD-001
+    requirement: Record each placeholder with its basis, resolution action, owner, due date, and status.
+    basis: NASA-SEH-REV2 Appendix C, C.3 General Goodness Checklist
+    enforcement: automated
+  - id: REQ-TRACE-001
+    requirement: Maintain bidirectional traceability through the requirement hierarchy and identify derived requirements.
+    basis: NASA-SEH-REV2 sections 4.3 and 6.2.2.1; Appendix C, C.4 Requirements Validation Checklist, Traceability
+    enforcement: automated_and_human
+  - id: REQ-DERIVED-001
+    requirement: Record the basis, rationale, owner, allocation, and approval state of each derived requirement.
+    basis: NASA-SEH-REV2 section 4.3.2.2
+    enforcement: automated_and_human
+  - id: REQ-COMPLETE-001
+    requirement: Record a result and checkable evidence for every clarity, completeness, compliance, consistency, traceability, correctness, functionality, performance, interface, maintainability, reliability, verifiability, and data-usage topic in the Appendix C Requirements Validation Checklist, plus applicable lifecycle completeness topics from sections 2.6, 4.1, and 4.2.
+    basis: NASA-SEH-REV2 sections 2.6, 4.1, and 4.2; Appendix C, Requirements Validation Checklist
+    enforcement: structured_human
+  - id: STK-001
+    requirement: Identify stakeholders, decision authority, needs, goals, objectives, ConOps sources, MOEs, constraints, assumptions, environments, commitments, and expectation baseline.
+    basis: NASA-SEH-REV2 section 4.1; Appendix S
+    enforcement: structured_human
+  - id: DECOMP-001
+    requirement: Record functions, inputs, outputs, sequences, failure modes, consequences, allocations, and derived-requirement decisions as applicable.
+    basis: NASA-SEH-REV2 section 4.3; Appendix F
+    enforcement: structured_human
+  - id: VRF-PLAN-001
+    requirement: Plan verification separately for each binding product requirement.
+    basis: NASA-SEH-REV2 sections 5.3 and 6.1; Appendix D
+    enforcement: automated
+  - id: VRF-PLAN-002
+    requirement: Record the requirement number, source document and paragraph, requirement text, success criteria, method, facility or laboratory, phase, acceptance use, preflight acceptance use, performing organization, and results state.
+    basis: NASA-SEH-REV2 Appendix D
+    enforcement: automated
+  - id: VRF-RESULT-001
+    requirement: Preserve verification configuration, results, discrepancies, nonconformances, waivers, and evidence references.
+    basis: NASA-SEH-REV2 section 5.3
+    enforcement: structured_human
+  - id: VAL-PLAN-001
+    requirement: Keep product validation distinct from requirement verification.
+    basis: NASA-SEH-REV2 sections 2.4 and 5.4; Appendix E
+    enforcement: automated
+  - id: VAL-PLAN-002
+    requirement: Record the validation product, activity, objective, method, facility or laboratory, phase, performing organization, results state, stakeholder expectation trace, ConOps trace, MOE trace, environment, and representative users.
+    basis: NASA-SEH-REV2 section 5.4; Appendix E
+    enforcement: automated_and_human
+  - id: IFACE-001
+    requirement: Identify each internal and external interface, its owners, controlling source, units, tolerances, compatibility evidence, and joint change authority.
+    basis: NASA-SEH-REV2 section 6.3; Appendix L
+    enforcement: structured_human
+  - id: BASELINE-001
+    requirement: Bind approved requirements and stakeholder expectations to identified, versioned baselines under declared change authority.
+    basis: NASA-SEH-REV2 sections 4.1, 4.2, 6.2, and 6.5
+    enforcement: automated_and_human
+  - id: CHANGE-001
+    requirement: Record each proposed or approved requirement change and its effect on cost, schedule, architecture, design, interfaces, ConOps, higher- and lower-level requirements, safety, and risk.
+    basis: NASA-SEH-REV2 section 6.2.2.2
+    enforcement: structured_human
+  - id: DATA-001
+    requirement: Preserve retrievable versions, sources, decisions, assumptions, changes, review evidence, and approval evidence.
+    basis: NASA-SEH-REV2 section 6.6
+    enforcement: structured_human
+  - id: REVIEW-001
+    requirement: Obtain human review of source fidelity, coverage, conflicts, feasibility, verification adequacy, validation adequacy, traceability, interfaces, and lifecycle completeness.
+    basis: NASA-SEH-REV2 sections 4.2.4.5, 5.3, 5.4, and 6.2; Appendix N
+    enforcement: automated_gate
+  - id: APPROVAL-001
+    requirement: Bind baseline approval to the current content digest and a declared approval authority.
+    basis: NASA-SEH-REV2 sections 4.1, 4.2, 6.2, and 6.5
+    enforcement: automated_gate
+  - id: NPR-AUTH-001
+    requirement: Confirm current NODIS status and applicability before a NASA process assessment.
+    basis: NPR-7123.1D-C2, Preface and section 1
+    enforcement: automated_gate
+  - id: NPR-AUTH-002
+    requirement: Use the complete applicable compliance matrix and authorized tailoring or customization, SEMP or equivalent, and ETA evidence for a NASA process assessment.
+    basis: NPR-7123.1D-C2 sections 1.3, 2.1, 2.2, and Appendix D; NASA-SEH-REV2 section 3.11
+    enforcement: automated_gate
+
+automated_check_limits:
+  - Pattern checks do not prove semantic correctness, necessity, completeness, feasibility, safety, or conflict freedom.
+  - Structured fields prove that evidence was supplied, not that the evidence is true or sufficient.
+  - Human reviewers must compare the artifact with authoritative sources.
+  - The checker reports artifact readiness. It never reports NASA certification or organizational compliance.

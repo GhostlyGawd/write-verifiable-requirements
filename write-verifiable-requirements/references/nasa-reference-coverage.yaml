@@ -1,0 +1,140 @@
+version: 1
+audited: "2026-07-28"
+scope_statement: >-
+  This matrix records a complete section-level applicability review of
+  NASA/SP-2016-6105 Rev 2 for the requirements lifecycle. Governing sections
+  supply rules or required evidence. Supporting sections supply context for
+  specified tasks. Out-of-scope sections do not directly govern requirements
+  elicitation, definition, validation, traceability, verification planning,
+  baseline management, or controlled change.
+
+authorities:
+  - id: NASA-SEH-REV2
+    title: NASA Systems Engineering Handbook
+    identifier: NASA/SP-2016-6105 Rev 2
+    authority_type: guidance
+    publication_date: "2017-02-17"
+    bundled_file: nasa-systems-engineering-handbook-rev2.pdf
+    sha256: 8eeb4887a4dc57a23049da7dd2ed556833cf98e214b240468d987873164ff688
+    official_url: https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf
+    scope_note: >-
+      NASA describes this handbook as general guidance and a companion to
+      NPR 7123.1. It is not, by itself, a mandatory compliance standard.
+  - id: NPR-7123.1D-C2
+    title: NASA Systems Engineering Processes and Requirements
+    identifier: NPR 7123.1D Updated with Change 2
+    authority_type: mandatory_for_applicable_nasa_work
+    effective_date: "2023-07-05"
+    expiration_date: "2028-07-05"
+    bundled_file: npr-7123.1d-change-2.pdf
+    sha256: 686b0d55d492bffe7e750a15523f339c5de41cb253499828b4fe9f2924810e40
+    current_authority_url: https://nodis3.gsfc.nasa.gov/displayDir.cfm?Internal_ID=N_PR_7123_001D_
+    scope_note: >-
+      Current status must be checked in NODIS before a NASA process-compliance
+      review. The skill cannot approve tailoring, customization, waivers,
+      deviations, a SEMP, or an ETA process.
+
+classifications:
+  governing: Directly supplies a requirements-lifecycle rule, gate, field, or review category.
+  supporting: Supplies task-dependent context but no universal requirements-artifact gate.
+  reference: Supplies definitions, terminology, or lookup material.
+  out_of_scope: Does not directly govern the requirements-lifecycle artifact.
+  reserved: Contains no substantive guidance.
+
+handbook_sections:
+  - {id: Preface, title: Preface, classification: supporting, disposition: Establishes version and handbook purpose.}
+  - {id: "1.0", title: Introduction, classification: supporting, disposition: Establishes authority boundary and intended use.}
+  - {id: "1.1", title: Purpose, classification: governing, controls: [PROFILE-001], disposition: Prevent claims that handbook guidance alone establishes NASA compliance.}
+  - {id: "1.2", title: Scope and Depth, classification: governing, controls: [REQ-CTX-001], disposition: Require lifecycle and product-layer scope selection.}
+  - {id: "2.0", title: Fundamentals of Systems Engineering, classification: supporting, disposition: Provides process context.}
+  - {id: "2.1", title: Common Technical Processes and SE Engine, classification: supporting, disposition: Provides iterative and recursive lifecycle context.}
+  - {id: "2.2", title: SE Engine by Project Phase, classification: supporting, disposition: Provides phase context for requirement maturity.}
+  - {id: "2.3", title: Example of Using the SE Engine, classification: out_of_scope, disposition: Illustrative example only.}
+  - {id: "2.4", title: Product Verification and Product Validation, classification: governing, controls: [VRF-PLAN-001, VAL-PLAN-001], disposition: Keep requirement verification and stakeholder validation distinct.}
+  - {id: "2.5", title: Cost Effectiveness Considerations, classification: supporting, disposition: Supports feasibility and tolerance review.}
+  - {id: "2.6", title: Human Systems Integration, classification: governing, controls: [REQ-COMPLETE-001], disposition: Include human roles, performance, interfaces, safety, training, and maintainability in completeness review.}
+  - {id: "2.7", title: Competency Model, classification: out_of_scope, disposition: Personnel development is outside the artifact.}
+  - {id: "3.0", title: NASA Program and Project Life Cycle, classification: supporting, disposition: Supplies phase and review context.}
+  - {id: "3.1", title: Program Formulation, classification: supporting, disposition: Phase context only.}
+  - {id: "3.2", title: Program Implementation, classification: supporting, disposition: Phase context only.}
+  - {id: "3.3", title: Pre-Phase A Concept Studies, classification: supporting, disposition: Stakeholder and concept maturity context.}
+  - {id: "3.4", title: Phase A Concept and Technology Development, classification: supporting, disposition: Requirements baseline maturity context.}
+  - {id: "3.5", title: Phase B Preliminary Design, classification: supporting, disposition: Allocation and verification maturity context.}
+  - {id: "3.6", title: Phase C Final Design and Fabrication, classification: supporting, disposition: Change-impact context.}
+  - {id: "3.7", title: Phase D Assembly Integration Test and Launch, classification: supporting, disposition: Verification and acceptance context.}
+  - {id: "3.8", title: Phase E Operations and Sustainment, classification: supporting, disposition: Operations and change context.}
+  - {id: "3.9", title: Phase F Closeout, classification: supporting, disposition: Records and disposition context.}
+  - {id: "3.10", title: Funding and Budget Cycle, classification: out_of_scope, disposition: Program budgeting is outside the artifact.}
+  - {id: "3.11", title: Tailoring and Customization of NPR 7123.1 Requirements, classification: governing, controls: [NPR-AUTH-002], disposition: NASA process claims require approved tailoring or customization evidence.}
+  - {id: "4.0", title: System Design Processes, classification: governing, controls: [STK-001, REQ-META-001, DECOMP-001], disposition: Container for stakeholder and technical requirements processes.}
+  - {id: "4.1", title: Stakeholder Expectations Definition, classification: governing, controls: [STK-001, BASELINE-001], disposition: Require stakeholders, needs, goals, objectives, ConOps, MOEs, sources, commitments, and baseline.}
+  - {id: "4.2", title: Technical Requirements Definition, classification: governing, controls: [REQ-META-001, REQ-VRF-001, BASELINE-001], disposition: Require complete technical requirements, metadata, validation, measures, and baseline.}
+  - {id: "4.3", title: Logical Decomposition, classification: governing, controls: [DECOMP-001, REQ-TRACE-001, REQ-DERIVED-001], disposition: Require allocation, derived-requirement rationale, conflict resolution, and bidirectional traceability.}
+  - {id: "4.4", title: Design Solution Definition, classification: supporting, disposition: Review implementation constraints and trace design-derived requirements.}
+  - {id: "5.0", title: Product Realization, classification: supporting, disposition: Container for verification and validation context.}
+  - {id: "5.1", title: Product Implementation, classification: out_of_scope, disposition: Product implementation is outside requirements authoring.}
+  - {id: "5.2", title: Product Integration, classification: supporting, disposition: Supplies interface and integrated-verification context.}
+  - {id: "5.3", title: Product Verification, classification: governing, controls: [VRF-PLAN-001, VRF-PLAN-002, VRF-RESULT-001], disposition: Require planned method, criteria, level, lead, environment, phase, organization, results state, and discrepancy handling.}
+  - {id: "5.4", title: Product Validation, classification: governing, controls: [VAL-PLAN-001, VAL-PLAN-002], disposition: Require validation against stakeholder expectations, ConOps, MOEs, intended environment, and representative users.}
+  - {id: "5.5", title: Product Transition, classification: supporting, disposition: Acceptance and delivery context only.}
+  - {id: "6.0", title: Crosscutting Technical Management, classification: supporting, disposition: Container for management controls.}
+  - {id: "6.1", title: Technical Planning, classification: supporting, disposition: Require identified verification and validation planning authority where applicable.}
+  - {id: "6.2", title: Requirements Management, classification: governing, controls: [REQ-TRACE-001, BASELINE-001, CHANGE-001], disposition: Require hierarchy, traceability, baseline, status, controlled change, communication, and impact analysis.}
+  - {id: "6.3", title: Interface Management, classification: governing, controls: [IFACE-001], disposition: Require internal and external interface ownership, compatibility, verification, and joint change authority.}
+  - {id: "6.4", title: Technical Risk Management, classification: supporting, disposition: Require risk impact in requirement change analysis when applicable.}
+  - {id: "6.5", title: Configuration Management, classification: governing, controls: [BASELINE-001, CHANGE-001], disposition: Bind approved content to an identified versioned baseline and change authority.}
+  - {id: "6.6", title: Technical Data Management, classification: governing, controls: [DATA-001], disposition: Preserve retrievable requirement records, versions, decisions, assumptions, changes, and evidence.}
+  - {id: "6.7", title: Technical Assessment, classification: supporting, disposition: Supports TPM status and lifecycle review readiness.}
+  - {id: "6.8", title: Decision Analysis, classification: supporting, disposition: Supports authorized ambiguity and conflict decisions.}
+  - {id: "Appendix A", title: Acronyms, classification: reference, disposition: Terminology lookup only.}
+  - {id: "Appendix B", title: Glossary, classification: reference, disposition: Controls NASA term meanings for the NASA lifecycle profile.}
+  - {id: "Appendix C", title: How to Write a Good Requirement Checklist, classification: governing, controls: [LANG-SHALL-001, REQ-FORM-001, REQ-CLR-001, REQ-COMPLETE-001], disposition: Apply every editorial, goodness, and validation checklist category.}
+  - {id: "Appendix D", title: Requirements Verification Matrix, classification: governing, controls: [VRF-PLAN-002], disposition: Generate the suggested minimum verification-planning fields.}
+  - {id: "Appendix E", title: Validation Plan and Validation Requirements Matrix, classification: governing, controls: [VAL-PLAN-002], disposition: Generate stakeholder validation-planning fields separately from verification.}
+  - {id: "Appendix F", title: Functional Timing and State Analysis, classification: out_of_scope, disposition: The appendix was removed in Rev 2 and supplies no rule; section 4.3 controls decomposition.}
+  - {id: "Appendix G", title: Technology Assessment and Insertion, classification: supporting, disposition: Use for feasibility and technology assumptions when applicable.}
+  - {id: "Appendix H", title: Integration Plan Outline, classification: supporting, disposition: Use for interface and integration-dependent verification context.}
+  - {id: "Appendix I", title: Verification and Validation Plan Outline, classification: governing, controls: [VRF-PLAN-001, VAL-PLAN-001, REVIEW-001], disposition: Control verification and validation plan content when that deliverable is requested.}
+  - {id: "Appendix J", title: SEMP Content Outline, classification: supporting, disposition: Required only for NASA process-evidence work.}
+  - {id: "Appendix K", title: Technical Plans, classification: supporting, disposition: Planning maturity context only.}
+  - {id: "Appendix L", title: Interface Requirements Document Outline, classification: governing, controls: [IFACE-001, REQ-VALUE-001], disposition: Control IRD scope, precedence, authority, units, tolerances, and interface categories.}
+  - {id: "Appendix M", title: Configuration Management Plan Outline, classification: supporting, disposition: Required only for baseline-management planning.}
+  - {id: "Appendix N", title: Technical Peer Reviews and Inspections, classification: governing, controls: [REVIEW-001], disposition: Supply review independence and evidence context.}
+  - {id: "Appendix O", title: Reserved, classification: reserved, disposition: No content.}
+  - {id: "Appendix P", title: Statement of Work Review Checklist, classification: supporting, disposition: Use when personnel or task obligations belong in a SOW rather than product requirements.}
+  - {id: "Appendix Q", title: Reserved, classification: reserved, disposition: No content.}
+  - {id: "Appendix R", title: HSI Plan Content Outline, classification: supporting, disposition: Use for human-system requirement completeness.}
+  - {id: "Appendix S", title: Concept of Operations Annotated Outline, classification: governing, controls: [STK-001, VAL-PLAN-002], disposition: Supply ConOps completeness and validation context.}
+  - {id: "Appendix T", title: Systems Engineering in Phase E, classification: supporting, disposition: Use for operational requirement changes and sustainment.}
+
+npr_requirements_lifecycle_subset:
+  applicability_note: >-
+    These are the NPR requirements that directly establish the NASA
+    requirements-lifecycle processes. They are not the complete NPR compliance
+    matrix. A full NASA program or project compliance claim remains outside this
+    skill and requires the complete current NPR, the applicable compliance
+    matrix, SEMP, tailoring or customization records, and ETA decisions.
+  requirements:
+    - {id: SE-07, section: "3.2.2.1", process: stakeholder_expectations_definition}
+    - {id: SE-08, section: "3.2.3.1", process: technical_requirements_definition}
+    - {id: SE-09, section: "3.2.4.1", process: logical_decomposition}
+    - {id: SE-13, section: "3.2.8.1", process: product_verification}
+    - {id: SE-14, section: "3.2.9.1", process: product_validation}
+    - {id: SE-16, section: "3.2.11.1", process: technical_planning}
+    - {id: SE-17, section: "3.2.12.1", process: requirements_management}
+    - {id: SE-18, section: "3.2.13.1", process: interface_management}
+    - {id: SE-24, section: "4.2.1", process: contracted_work_planning}
+    - {id: SE-25, section: "4.2.3", process: solicitation_technical_inputs}
+    - {id: SE-26, section: "4.2.4", process: contractor_work_products}
+    - {id: SE-27, section: "4.2.5", process: insight_and_oversight_requirements}
+    - {id: SE-28, section: "4.2.7", process: proposal_technical_evaluation}
+    - {id: SE-29, section: "4.3.1", process: contract_technical_insight_and_oversight}
+    - {id: SE-30, section: "4.4.1", process: deliverable_acceptance_review}
+    - {id: SE-31, section: "4.4.2", process: contracted_product_transition}
+
+release_claim_rules:
+  - Never describe NASA/SP-2016-6105 Rev 2 guidance as mandatory NASA compliance.
+  - Never describe a requirements artifact as NPR 7123.1D compliant based only on text quality.
+  - Require a current NODIS check before any NASA process-compliance review.
+  - Require the complete applicable NPR compliance matrix and authorized tailoring, waiver, deviation, SEMP, and ETA evidence outside this skill.
+  - Report requirements-lifecycle artifact quality separately from organizational process compliance.

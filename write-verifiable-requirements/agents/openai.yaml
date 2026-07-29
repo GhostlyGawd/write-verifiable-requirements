@@ -1,0 +1,6 @@
+interface:
+  display_name: "Write Verifiable Requirements"
+  short_description: "Create and audit traceable requirements lifecycles"
+  default_prompt: "Use $write-verifiable-requirements to turn this source material into traceable requirements with separate verification and validation evidence."
+policy:
+  allow_implicit_invocation: true
