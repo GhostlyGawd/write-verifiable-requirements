@@ -24,7 +24,8 @@ approve tailoring or make an organizational compliance decision.
   `location`, and `precedence`. Bind each record to source bytes with a
   64-character lowercase SHA-256 `digest`. If source bytes are not available,
   omit `digest` and give a checkable `digest_unavailable_reason`. Do not provide
-  both.
+  both. Placeholder identity values such as `not provided`, `unknown`, and
+  `unavailable` do not satisfy `revision` or `location`.
 - `source_transformations`: records that map an exact source clause to a
   proposed requirement interpretation, list each added or removed condition,
   and identify the authority for the transformation
@@ -145,6 +146,11 @@ requirements-lifecycle subset in `nasa-reference-coverage.yaml`.
 
 Use `{id, statement, decision_needed, owner, due_date, status, resolution}` for
 an unresolved record. `OPEN` blocks release.
+
+When an ambiguity or conflict has no authorized decision authority, each
+separate `decision_authority` field must state: “The decision authority is not
+currently authorized; none was added.” A shortened absence statement is not
+equivalent.
 
 Human reviews use:
 

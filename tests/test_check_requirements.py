@@ -480,6 +480,51 @@ class RequirementsCheckerTests(unittest.TestCase):
             )
         )
 
+    def test_source_authority_rejects_placeholder_revision(self) -> None:
+        document = valid_document()
+        document["source_authorities"][0]["revision"] = "not provided"
+        report = CHECKER.evaluate(document)
+        self.assert_has(report, "REQ-SRC-001", "FAIL")
+        self.assertFalse(
+            any(
+                issue["location"] == "source_authorities[0]"
+                and issue["result"] == "PASS"
+                and "revision-bound" in issue["message"]
+                for issue in report["issues"]
+            )
+        )
+
+    def test_each_absent_decision_authority_requires_complete_wording(
+        self,
+    ) -> None:
+        document = valid_document()
+        document["ambiguities"] = [
+            {
+                "id": "AMB-001",
+                "decision_authority": "not provided",
+            },
+            {
+                "id": "AMB-002",
+                "decision_authority": (
+                    "The decision authority is not currently authorized; "
+                    "none was added."
+                ),
+            },
+        ]
+        report = CHECKER.evaluate(document)
+        matching = [
+            issue
+            for issue in report["issues"]
+            if issue["check"] == "REQ-SRC-001"
+            and issue["message"]
+            == "An absent decision authority must use the complete bounded statement."
+        ]
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(
+            matching[0]["location"],
+            "document.ambiguities[0].decision_authority",
+        )
+
     def test_duplicate_requirement_id_fails(self) -> None:
         document = valid_document()
         document["requirements"].append(copy.deepcopy(document["requirements"][0]))

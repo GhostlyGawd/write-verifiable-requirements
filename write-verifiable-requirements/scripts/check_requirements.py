@@ -143,6 +143,16 @@ VAGUE_PATTERNS = {
     ],
 }
 PLACEHOLDER_RE = re.compile(r"\b(?:TBD|TBR|TBC)\b")
+MISSING_SOURCE_IDENTITY_VALUES = {
+    "n/a",
+    "na",
+    "none",
+    "not provided",
+    "not specified",
+    "unknown",
+    "unavailable",
+}
+AUTHORITY_ABSENCE_CLAUSES = ("not currently authorized", "none was added")
 NUMBER_UNIT_RE = re.compile(
     r"(?<![\w.])[-+]?\d+(?:[.,]\d+)?"
     r"(?:\s*(?:%|°[CF]|[A-Za-zµ]+(?:/[A-Za-z]+)?))?"
@@ -337,6 +347,12 @@ def check_sources(
         title = text_value(authority.get("title"))
         revision = text_value(authority.get("revision"))
         source_location = text_value(authority.get("location"))
+        revision_is_missing = (
+            revision.casefold() in MISSING_SOURCE_IDENTITY_VALUES
+        )
+        location_is_missing = (
+            source_location.casefold() in MISSING_SOURCE_IDENTITY_VALUES
+        )
         source_digest = text_value(authority.get("digest"))
         digest_unavailable_reason = text_value(
             authority.get("digest_unavailable_reason")
@@ -352,7 +368,9 @@ def check_sources(
             not source_id
             or not title
             or not revision
+            or revision_is_missing
             or not source_location
+            or location_is_missing
             or not isinstance(precedence, int)
             or precedence < 1
             or not digest_binding_valid
@@ -414,6 +432,51 @@ def check_sources(
             f"Repeated precedence values: {sorted(duplicate_precedence)}",
         )
     return source_ids, precedences
+
+
+def check_authority_gap_wording(
+    document: dict[str, Any], issues: list[Issue]
+) -> None:
+    stack: list[tuple[str, Any]] = [("document", document)]
+    missing_values = MISSING_SOURCE_IDENTITY_VALUES | {
+        "not identified",
+        "not authorized",
+    }
+    while stack:
+        location, value = stack.pop()
+        if isinstance(value, dict):
+            for field, child in value.items():
+                child_location = f"{location}.{field}"
+                if field == "decision_authority":
+                    wording = text_value(child).casefold()
+                    authority_is_absent = (
+                        wording in missing_values
+                        or "not currently authorized" in wording
+                        or "none was added" in wording
+                    )
+                    has_complete_statement = all(
+                        clause in wording for clause in AUTHORITY_ABSENCE_CLAUSES
+                    )
+                    if authority_is_absent and not has_complete_statement:
+                        add(
+                            issues,
+                            child_location,
+                            "REQ-SRC-001",
+                            "FAIL",
+                            "Skill source-authority policy",
+                            (
+                                "An absent decision authority must use the "
+                                "complete bounded statement."
+                            ),
+                            (
+                                "The decision authority is not currently "
+                                "authorized; none was added."
+                            ),
+                        )
+                stack.append((child_location, child))
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                stack.append((f"{location}[{index}]", child))
 
 
 def check_profile(
@@ -2177,6 +2240,7 @@ def evaluate(document: dict[str, Any]) -> dict[str, Any]:
     digest = content_digest(document)
     check_required_context(document, issues)
     source_ids, _ = check_sources(document, issues)
+    check_authority_gap_wording(document, issues)
     language_profile, lifecycle_profile = check_profile(document, issues)
     requirements = check_requirements(
         document, language_profile, lifecycle_profile, source_ids, issues

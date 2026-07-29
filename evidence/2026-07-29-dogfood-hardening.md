@@ -76,3 +76,10 @@ prohibition. The repository contract test pins this distinction.
 A later blind run used the complete phrase for a cache exception but shortened
 it for a sampling gap. The skill now requires the complete two-clause statement
 for every separate authority gap in the same report.
+
+The next independent review found four shortened `decision_authority` fields
+and three source records whose `revision` value was `not provided`. The checker
+had treated those placeholder revisions as valid and described the records as
+revision-bound. The checker now rejects placeholder source identity values and
+requires the complete bounded absence statement in every separate
+`decision_authority` field. Two regression tests reproduce these failures.

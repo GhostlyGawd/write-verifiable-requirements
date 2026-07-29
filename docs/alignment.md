@@ -16,6 +16,7 @@ records volatile run results.
 | Machine-readable release state is explicit | Required | `state_code`, `operation_succeeded`, and `release_permitted` | Report-contract and CLI tests | README and SKILL release behavior | Implemented |
 | Report artifacts are immutable by default | Required | Digest-qualified names, atomic replacement, explicit `--overwrite` | CLI output and collision tests | README example; SKILL reference operations | Implemented |
 | Source authority identity is revision-bound | Required | Revision, location, and digest-or-reason validation | Source-authority validation tests | Requirements schema | Implemented |
+| Authority gaps stay explicit and source bounded | Required | Placeholder source identities fail; each absent decision authority requires the complete bounded statement | Source placeholder and authority-wording tests | SKILL and requirements schema | Implemented |
 | Current NPR evidence is canonical and fresh | Required | Same-day NODIS record bound to response and manifest digests | NPR authority and manager tests | README workflow; schema; SKILL | Implemented |
 | Public CI uses standard isolated hosted runners with least privilege | Required | `.github/workflows/ci.yml` | Public PR and main runs | SECURITY supply-chain controls and dated evidence | Validated; see dated evidence |
 | NASA source and endorsement boundaries are explicit | Required | Manifest and unchanged PDFs | Hash and page/metadata inspection | NOTICE and README limitations | Implemented |
