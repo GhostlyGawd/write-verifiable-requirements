@@ -76,7 +76,9 @@ do not reduce it to a feasibility note. Do not add an unsourced grace period,
 population, exception, threshold, condition, or assumption to a requirement or
 verification method. Describe an absent authority as “not currently
 authorized; none was added.” Do not convert absence of current authority into a
-permanent prohibition such as “not permitted.”
+permanent prohibition such as “not permitted.” Use the complete two-clause
+statement for each separate authority gap; do not shorten it elsewhere in the
+same report.
 
 ## Profile and authority rules
 

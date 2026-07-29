@@ -72,3 +72,7 @@ that no exception was currently authorized.
 The skill now requires the bounded statement “not currently authorized; none
 was added” and prohibits converting absent authority into a permanent
 prohibition. The repository contract test pins this distinction.
+
+A later blind run used the complete phrase for a cache exception but shortened
+it for a sampling gap. The skill now requires the complete two-clause statement
+for every separate authority gap in the same report.

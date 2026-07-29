@@ -87,6 +87,8 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("source-transformation mapping", skill)
         self.assertIn("authorized; none was added", skill)
         self.assertIn("Do not convert absence of current authority", skill)
+        self.assertIn("complete two-clause", skill)
+        self.assertIn("each separate authority gap", skill)
         self.assertIn("REQ-FID-002", rules)
         self.assertIn("REQ-CONFLICT-001", rules)
         self.assertIn("REQ-VRF-003", rules)
