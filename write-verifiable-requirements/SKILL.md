@@ -29,8 +29,9 @@ current working directory.
    use the bundled
    [handbook](references/nasa-systems-engineering-handbook-rev2.pdf). For an NPR
    assessment, also use the bundled [NPR](references/npr-7123.1d-change-2.pdf).
-   Run `python scripts/manage_references.py check-current` before a current-NPR
-   claim. This explicit command accesses NODIS.
+   Run `python <SKILL_ROOT>/scripts/manage_references.py --json check-current`
+   before a current-NPR claim. This explicit command accesses NODIS. Copy its
+   unchanged `authority` object to `npr_process_evidence.current_authority_record`.
 6. Elicit stakeholder expectations before technical requirements. Separate
    needs, goals, objectives, ConOps, MOEs, constraints, and assumptions from
    binding requirements.
@@ -154,5 +155,9 @@ code.
   update the rule mapping, and rerun all acceptance tests before approval.
 - A matching PDF digest proves document identity. It does not prove that an NPR
   is current, applicable, tailored, or satisfied.
-- Run `python <SKILL_ROOT>/scripts/check_requirements.py --emit-template` to
-  create a structured starting artifact. A template is not approval evidence.
+- Run `python <SKILL_ROOT>/scripts/check_requirements.py --emit-template shall`
+  (or `bcp14`) to create a structured starting artifact. A template is not
+  approval evidence.
+- Reports in an output directory use digest-qualified names. The checker writes
+  them atomically and does not replace an existing artifact unless the user
+  explicitly supplies `--overwrite`.

@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -50,7 +51,16 @@ def valid_document(profile: str = "shall") -> dict[str, Any]:
             "excluded_processes": [],
         },
         "source_authorities": [
-            {"id": "SRC-001", "title": "Approved control brief", "precedence": 1}
+            {
+                "id": "SRC-001",
+                "title": "Approved control brief",
+                "revision": "1",
+                "location": "approved-control-brief:3.1",
+                "precedence": 1,
+                "digest_unavailable_reason": (
+                    "The authority is a controlled record without accessible source bytes."
+                ),
+            }
         ],
         "controlled_terms": [
             {
@@ -220,13 +230,30 @@ def nasa_document(npr: bool = False) -> dict[str, Any]:
         }
     )
     if npr:
+        manifest = (
+            ROOT
+            / "write-verifiable-requirements"
+            / "references"
+            / "reference-manifest.json"
+        )
         document["npr_process_evidence"] = {
-            "nodis_url": (
-                "https://nodis3.gsfc.nasa.gov/displayDir.cfm?"
-                "Internal_ID=N_PR_7123_001D_"
-            ),
-            "checked_date": "2026-07-28",
-            "directive_identifier": "NPR 7123.1D Updated with Change 2",
+            "current_authority_record": {
+                "reference_id": "NPR-7123.1D-C2",
+                "directive_identifier": "NPR 7123.1D Updated with Change 2",
+                "result": "PASS",
+                "checked_at": datetime.now(timezone.utc).isoformat(),
+                "authority_url": (
+                    "https://nodis3.gsfc.nasa.gov/displayDir.cfm?"
+                    "Internal_ID=N_PR_7123_001D_"
+                ),
+                "observed_markers": sorted(CHECKER.NPR_AUTHORITY_MARKERS),
+                "missing_markers": [],
+                "expired": False,
+                "response_sha256": "1" * 64,
+                "manifest_sha256": hashlib.sha256(
+                    manifest.read_bytes()
+                ).hexdigest(),
+            },
             "applicability": "Applicable NASA project per ETA decision ETA-001.",
             "complete_compliance_matrix": "NPR-CM-001",
             "compliance_matrix_digest": "sha256:complete-matrix",
@@ -292,6 +319,9 @@ class RequirementsCheckerTests(unittest.TestCase):
     def test_complete_content_without_reviews_is_draft(self) -> None:
         report = CHECKER.evaluate(valid_document())
         self.assertEqual(report["status"], CHECKER.STATUS_DRAFT)
+        self.assertEqual(report["state_code"], "DRAFT")
+        self.assertTrue(report["operation_succeeded"])
+        self.assertFalse(report["release_permitted"])
         self.assert_has(report, "REVIEW-001", "REVIEW_REQUIRED")
 
     def test_passing_reviews_make_content_ready(self) -> None:
@@ -307,6 +337,9 @@ class RequirementsCheckerTests(unittest.TestCase):
         add_approval(document)
         report = CHECKER.evaluate(document)
         self.assertEqual(report["status"], CHECKER.STATUS_BASELINED)
+        self.assertEqual(report["state_code"], "BASELINED")
+        self.assertTrue(report["operation_succeeded"])
+        self.assertTrue(report["release_permitted"])
         self.assertTrue(report["release_gates"]["clean_output_permitted"])
 
     def test_bcp14_profile_can_pass(self) -> None:
@@ -424,6 +457,28 @@ class RequirementsCheckerTests(unittest.TestCase):
         document["requirements"][0]["source"] = ["MISSING"]
         report = CHECKER.evaluate(document)
         self.assert_has(report, "REQ-SRC-001", "FAIL")
+
+    def test_source_authority_requires_revision_location_and_digest_binding(
+        self,
+    ) -> None:
+        document = valid_document()
+        authority = document["source_authorities"][0]
+        authority.pop("revision")
+        authority["digest"] = "NOT-A-SHA256"
+        report = CHECKER.evaluate(document)
+        self.assert_has(report, "REQ-SRC-001", "FAIL")
+        authority["revision"] = "2"
+        authority["digest"] = "a" * 64
+        authority.pop("digest_unavailable_reason")
+        report = CHECKER.evaluate(document)
+        self.assertFalse(
+            any(
+                issue["location"] == "source_authorities[0]"
+                and issue["check"] == "REQ-SRC-001"
+                and issue["result"] == "FAIL"
+                for issue in report["issues"]
+            )
+        )
 
     def test_duplicate_requirement_id_fails(self) -> None:
         document = valid_document()
@@ -643,19 +698,73 @@ class RequirementsCheckerTests(unittest.TestCase):
                 check=False,
             )
             self.assertEqual(result.returncode, 1)
-            self.assertTrue((report_dir / "requirements-report.json").exists())
-            self.assertTrue((report_dir / "requirements-report.md").exists())
+            digest_prefix = CHECKER.content_digest(document).split(":", 1)[1][:12]
+            json_report = report_dir / f"requirements-report-{digest_prefix}.json"
+            markdown_report = report_dir / f"requirements-report-{digest_prefix}.md"
+            self.assertTrue(json_report.exists())
+            self.assertTrue(markdown_report.exists())
             parsed = json.loads(
-                (report_dir / "requirements-report.json").read_text()
+                json_report.read_text()
             )
             self.assertEqual(parsed["status"], CHECKER.STATUS_DRAFT)
+            self.assertFalse(parsed["release_permitted"])
+            second = subprocess.run(
+                [
+                    "python3",
+                    str(SCRIPT),
+                    str(input_path),
+                    "--format",
+                    "both",
+                    "--output-dir",
+                    str(report_dir),
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(second.returncode, 2)
+            self.assertIn("Use --overwrite", second.stderr)
+            overwritten = subprocess.run(
+                [
+                    "python3",
+                    str(SCRIPT),
+                    str(input_path),
+                    "--format",
+                    "both",
+                    "--output-dir",
+                    str(report_dir),
+                    "--overwrite",
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(overwritten.returncode, 1)
 
     def test_template_generation_supports_each_profile(self) -> None:
         for profile in ("shall", "bcp14"):
             generated = CHECKER.template(profile)
             self.assertEqual(generated["language_profile"], profile)
             self.assertEqual(generated["lifecycle_profile"], "general")
+            result = subprocess.run(
+                [
+                    "python3",
+                    str(SCRIPT),
+                    "--emit-template",
+                    profile,
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0)
+            parsed = yaml.safe_load(result.stdout)
+            self.assertEqual(parsed["language_profile"], profile)
         self.assertIn("normative_language_notice", CHECKER.template("bcp14"))
+        generated = CHECKER.template("shall", "nasa-npr-7123.1d")
+        self.assertIn(
+            "current_authority_record", generated["npr_process_evidence"]
+        )
 
     def test_realistic_safety_requirement_preserves_prohibition_and_threshold(
         self,
@@ -763,7 +872,12 @@ class RequirementsCheckerTests(unittest.TestCase):
             {
                 "id": "SRC-002",
                 "title": "Approved interface brief",
+                "revision": "1",
+                "location": "approved-interface-brief:4.2",
                 "precedence": 1,
+                "digest_unavailable_reason": (
+                    "The authority is a controlled record without accessible source bytes."
+                ),
             }
         )
         document["unresolved"] = [
@@ -886,6 +1000,26 @@ class RequirementsCheckerTests(unittest.TestCase):
         self.assertTrue(report["release_gates"]["npr_authority_evidence"])
         self.assertIn("not NASA certification", report["claim_boundary"])
         self.assertNotIn("NASA compliant", report["status"])
+
+    def test_npr_profile_rejects_stale_or_unbound_authority_record(self) -> None:
+        document = nasa_document(npr=True)
+        authority = document["npr_process_evidence"]["current_authority_record"]
+        authority["checked_at"] = "2000-01-01T00:00:00+00:00"
+        authority["manifest_sha256"] = "not-a-digest"
+        report = CHECKER.evaluate(document)
+        self.assertEqual(report["status"], CHECKER.STATUS_FAILED)
+        self.assert_has(report, "NPR-AUTH-002", "FAIL")
+        authority["checked_at"] = "2999-01-01T00:00:00+00:00"
+        authority["manifest_sha256"] = hashlib.sha256(
+            (
+                ROOT
+                / "write-verifiable-requirements"
+                / "references"
+                / "reference-manifest.json"
+            ).read_bytes()
+        ).hexdigest()
+        report = CHECKER.evaluate(document)
+        self.assert_has(report, "NPR-AUTH-002", "FAIL")
 
     def test_legacy_combined_profile_fails_closed(self) -> None:
         document = valid_document()

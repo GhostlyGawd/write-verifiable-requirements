@@ -38,7 +38,7 @@ If an agent uses that installer, it must still run the verification command
 inside the installed skill:
 
 ```shell
-python scripts/manage_references.py status
+python write-verifiable-requirements/scripts/manage_references.py status
 ```
 
 The repository installer is the supported complete installation path.
@@ -81,14 +81,18 @@ execution does not access the network.
 For a current NPR assessment, the agent runs:
 
 ```shell
-python scripts/manage_references.py check-current
+python write-verifiable-requirements/scripts/manage_references.py --json check-current
 ```
+
+The agent copies the unchanged `authority` object into the structured
+requirements artifact. The checker accepts only a same-day record that binds
+the NODIS response and local reference manifest by SHA-256.
 
 If a bundled reference is missing or corrupt, the affected NASA profile stops.
 The general profile remains available. The agent can run this explicit repair:
 
 ```shell
-python scripts/manage_references.py repair
+python write-verifiable-requirements/scripts/manage_references.py repair
 ```
 
 Repair downloads only manifest-approved bytes from listed NASA HTTPS hosts. It
@@ -106,6 +110,18 @@ Ask Codex:
 The agent returns findings, proposed corrections, unresolved decisions, and
 release status. Clean output remains blocked until the required evidence,
 human reviews, and baseline approval exist.
+
+Generate a starting artifact and write digest-qualified reports with:
+
+```shell
+python write-verifiable-requirements/scripts/check_requirements.py --emit-template shall
+python write-verifiable-requirements/scripts/check_requirements.py requirements.yaml --format both --output-dir reports
+```
+
+Report writes are atomic. Existing report artifacts are not replaced unless
+the agent receives explicit authority to use `--overwrite`. Read
+`release_permitted` from the JSON report. Do not infer release permission from
+the process exit code.
 
 ## Repository layout
 

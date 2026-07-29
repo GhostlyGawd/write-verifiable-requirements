@@ -13,6 +13,10 @@ records volatile run results.
 | New NASA bytes never become approved automatically | Required | Manifest digest is immutable during repair | Mismatch and corruption tests | CONTRIBUTING reference update procedure | Implemented |
 | General requirements work remains available without NASA authority | Required | Independent lifecycle profile selection | Existing general-profile tests | README profile table; SKILL failure behavior | Implemented |
 | Human judgment and approval remain mandatory | Required | Checker release gates and digest-bound records | Existing approval and stale-review tests | README limitations; SKILL release behavior | Implemented |
+| Machine-readable release state is explicit | Required | `state_code`, `operation_succeeded`, and `release_permitted` | Report-contract and CLI tests | README and SKILL release behavior | Implemented |
+| Report artifacts are immutable by default | Required | Digest-qualified names, atomic replacement, explicit `--overwrite` | CLI output and collision tests | README example; SKILL reference operations | Implemented |
+| Source authority identity is revision-bound | Required | Revision, location, and digest-or-reason validation | Source-authority validation tests | Requirements schema | Implemented |
+| Current NPR evidence is canonical and fresh | Required | Same-day NODIS record bound to response and manifest digests | NPR authority and manager tests | README workflow; schema; SKILL | Implemented |
 | Public CI uses standard isolated hosted runners with least privilege | Required | `.github/workflows/ci.yml` | Public PR and main runs | SECURITY supply-chain controls and dated evidence | Validated; see dated evidence |
 | NASA source and endorsement boundaries are explicit | Required | Manifest and unchanged PDFs | Hash and page/metadata inspection | NOTICE and README limitations | Implemented |
 | Repository code license is owner-selected | Required decision | No license file | Repository metadata audit | README status; NOTICE | Intentionally no license |

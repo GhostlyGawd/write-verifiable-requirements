@@ -9,6 +9,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -254,6 +255,15 @@ class ReferenceManagerTests(unittest.TestCase):
         ):
             result = MANAGER.check_current_authority(reference, 1.0)
         self.assertEqual(result["result"], "PASS")
+        self.assertEqual(
+            result["response_sha256"], hashlib.sha256(payload).hexdigest()
+        )
+        self.assertEqual(
+            result["observed_markers"], reference["expected_status_markers"]
+        )
+        self.assertEqual(
+            result["directive_identifier"], reference["identifier"]
+        )
 
         failing = FakeResponse(
             b"NPR 7123.1D",
@@ -266,6 +276,23 @@ class ReferenceManagerTests(unittest.TestCase):
             result = MANAGER.check_current_authority(reference, 1.0)
         self.assertEqual(result["result"], "FAIL")
         self.assertTrue(result["missing_markers"])
+
+        cli_response = FakeResponse(
+            payload,
+            reference["official_landing_page"],
+            content_type="text/html",
+        )
+        output = io.StringIO()
+        with mock.patch.object(
+            MANAGER, "open_approved_url", return_value=cli_response
+        ), redirect_stdout(output):
+            return_code = MANAGER.main(["--json", "check-current"])
+        self.assertEqual(return_code, MANAGER.EXIT_OK)
+        authority = json.loads(output.getvalue())["authority"]
+        self.assertEqual(
+            authority["manifest_sha256"],
+            hashlib.sha256(MANAGER.manifest_path().read_bytes()).hexdigest(),
+        )
 
 
 class InstallerTests(unittest.TestCase):

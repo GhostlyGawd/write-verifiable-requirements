@@ -90,6 +90,18 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("REQ-VRF-003", rules)
         self.assertIn("source_transformations", schema)
         self.assertIn("introduced_constraints", schema)
+        self.assertIn("state_code", skill)
+        self.assertIn("release_permitted", skill)
+        self.assertIn("digest-qualified names", skill)
+        self.assertIn("current_authority_record", schema)
+        self.assertIn("digest_unavailable_reason", schema)
+        agent_yaml = (
+            ROOT
+            / "write-verifiable-requirements"
+            / "agents"
+            / "openai.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("allow_implicit_invocation: true", agent_yaml)
 
 
 if __name__ == "__main__":

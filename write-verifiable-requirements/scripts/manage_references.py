@@ -485,6 +485,7 @@ def check_current_authority(
         raise ReferenceError("Authority response exceeded the size limit.")
     text = payload.decode("utf-8", errors="replace")
     missing = [marker for marker in markers if marker not in text]
+    observed = [marker for marker in markers if marker in text]
     expiration = reference.get("expiration_date")
     expired = False
     if isinstance(expiration, str):
@@ -495,11 +496,14 @@ def check_current_authority(
     result = "PASS" if not missing and not expired else "FAIL"
     return {
         "reference_id": reference["id"],
+        "directive_identifier": reference["identifier"],
         "result": result,
         "checked_at": datetime.now(timezone.utc).isoformat(),
         "authority_url": reference["official_landing_page"],
+        "observed_markers": observed,
         "missing_markers": missing,
         "expired": expired,
+        "response_sha256": hashlib.sha256(payload).hexdigest(),
         "message": (
             "Current NODIS identity, change level, and date markers are present."
             if result == "PASS"
@@ -616,7 +620,10 @@ def main(argv: list[str] | None = None) -> int:
             payload = report_payload(
                 args.command,
                 results,
-                "Run: python scripts/manage_references.py repair",
+                (
+                    f"Run: {sys.executable} "
+                    f"{Path(__file__).resolve()} repair"
+                ),
             )
         elif args.command == "repair":
             selected = set(args.reference_ids or [])
@@ -649,6 +656,9 @@ def main(argv: list[str] | None = None) -> int:
             authority = check_current_authority(
                 reference, args.timeout_seconds
             )
+            authority["manifest_sha256"] = hashlib.sha256(
+                args.manifest.read_bytes()
+            ).hexdigest()
             payload = report_payload(
                 "check-current",
                 results,

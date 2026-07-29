@@ -20,7 +20,11 @@ approve tailoring or make an organizational compliance decision.
 
 - `title`, `objective`, `system_boundary`, `intended_readers`
 - `lifecycle_scope`: `{product_layer, lifecycle_phase, included_processes, excluded_processes}`
-- `source_authorities`: ordered `{id, title, precedence}` records
+- `source_authorities`: ordered records with `id`, `title`, `revision`,
+  `location`, and `precedence`. Bind each record to source bytes with a
+  64-character lowercase SHA-256 `digest`. If source bytes are not available,
+  omit `digest` and give a checkable `digest_unavailable_reason`. Do not provide
+  both.
 - `source_transformations`: records that map an exact source clause to a
   proposed requirement interpretation, list each added or removed condition,
   and identify the authority for the transformation
@@ -123,7 +127,12 @@ These fields generate the separate Appendix E-style matrix.
 
 The `nasa-npr-7123.1d` profile requires `npr_process_evidence` with:
 
-- `nodis_url`, `checked_date`, `directive_identifier`, `applicability`
+- `current_authority_record`: the unchanged JSON `authority` object from a
+  same-day `manage_references.py --json check-current` result. It contains the
+  canonical reference and directive identifiers, result, timezone-aware
+  `checked_at`, official authority URL, observed and missing markers,
+  expiration result, response SHA-256, and reference-manifest SHA-256.
+- `applicability`
 - `complete_compliance_matrix`, `compliance_matrix_digest`
 - `semp_or_equivalent`, `semp_approval`
 - `tailoring_records`, `customization_records`

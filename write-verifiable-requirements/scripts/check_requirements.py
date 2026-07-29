@@ -11,10 +11,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import sys
+import tempfile
 from dataclasses import asdict, dataclass
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -144,6 +146,17 @@ PLACEHOLDER_RE = re.compile(r"\b(?:TBD|TBR|TBC)\b")
 NUMBER_UNIT_RE = re.compile(
     r"(?<![\w.])[-+]?\d+(?:[.,]\d+)?"
     r"(?:\s*(?:%|°[CF]|[A-Za-zµ]+(?:/[A-Za-z]+)?))?"
+)
+SHA256_RE = re.compile(r"[0-9a-f]{64}")
+NPR_AUTHORITY_MARKERS = {
+    "NPR 7123.1D",
+    "Effective Date: July 05, 2023",
+    "Expiration Date: July 05, 2028",
+    "Updated w/Change 2",
+}
+NPR_AUTHORITY_URL = (
+    "https://nodis3.gsfc.nasa.gov/displayDir.cfm?"
+    "Internal_ID=N_PR_7123_001D_"
 )
 
 
@@ -322,15 +335,40 @@ def check_sources(
             continue
         source_id = text_value(authority.get("id"))
         title = text_value(authority.get("title"))
+        revision = text_value(authority.get("revision"))
+        source_location = text_value(authority.get("location"))
+        source_digest = text_value(authority.get("digest"))
+        digest_unavailable_reason = text_value(
+            authority.get("digest_unavailable_reason")
+        )
         precedence = authority.get("precedence")
-        if not source_id or not title or not isinstance(precedence, int) or precedence < 1:
+        digest_valid = bool(SHA256_RE.fullmatch(source_digest))
+        digest_binding_valid = (
+            digest_valid and not digest_unavailable_reason
+        ) or (
+            not source_digest and bool(digest_unavailable_reason)
+        )
+        if (
+            not source_id
+            or not title
+            or not revision
+            or not source_location
+            or not isinstance(precedence, int)
+            or precedence < 1
+            or not digest_binding_valid
+        ):
             add(
                 issues,
                 location,
                 "REQ-SRC-001",
                 "FAIL",
                 "NASA-SEH-REV2 Appendix C",
-                "Source authority requires id, title, and positive integer precedence.",
+                "Source authority requires id, title, revision, location, positive integer precedence, and exactly one valid digest binding.",
+                (
+                    "Use a 64-character lowercase SHA-256 digest when source "
+                    "bytes are available. Otherwise, give "
+                    "digest_unavailable_reason."
+                ),
             )
             continue
         if source_id in source_ids:
@@ -351,7 +389,15 @@ def check_sources(
             "REQ-SRC-001",
             "PASS",
             "NASA-SEH-REV2 Appendix C",
-            f"Source authority {source_id} is defined.",
+            f"Source authority {source_id} is defined and revision-bound.",
+            (
+                f"revision={revision}; location={source_location}; "
+                + (
+                    f"digest={source_digest}"
+                    if source_digest
+                    else f"digest unavailable: {digest_unavailable_reason}"
+                )
+            ),
         )
 
     duplicate_precedence = {
@@ -1610,9 +1656,6 @@ def check_npr_authority(
         )
         return False
     required_text = (
-        "nodis_url",
-        "checked_date",
-        "directive_identifier",
         "applicability",
         "complete_compliance_matrix",
         "compliance_matrix_digest",
@@ -1626,16 +1669,61 @@ def check_npr_authority(
     for field in ("tailoring_records", "customization_records", "eta_decisions"):
         if not isinstance(evidence.get(field), list):
             missing.append(field)
-    if text_value(evidence.get("directive_identifier")) != (
+
+    authority = evidence.get("current_authority_record")
+    if not isinstance(authority, dict):
+        missing.append("current_authority_record")
+        authority = {}
+    if text_value(authority.get("reference_id")) != "NPR-7123.1D-C2":
+        missing.append("canonical reference_id")
+    if text_value(authority.get("directive_identifier")) != (
         "NPR 7123.1D Updated with Change 2"
     ):
-        missing.append("current directive identifier")
+        missing.append("canonical directive_identifier")
+    if authority.get("result") != "PASS":
+        missing.append("passing authority result")
+    authority_url = text_value(authority.get("authority_url"))
+    if authority_url != NPR_AUTHORITY_URL:
+        missing.append("canonical authority_url")
+    observed_markers = set(string_list(authority.get("observed_markers")))
+    if observed_markers != NPR_AUTHORITY_MARKERS:
+        missing.append("complete observed authority markers")
+    if authority.get("missing_markers") != []:
+        missing.append("empty missing_markers")
+    if authority.get("expired") is not False:
+        missing.append("unexpired authority record")
+    if not SHA256_RE.fullmatch(
+        text_value(authority.get("response_sha256"))
+    ):
+        missing.append("response_sha256")
+    manifest_digest = text_value(authority.get("manifest_sha256"))
+    local_manifest = (
+        Path(__file__).resolve().parents[1]
+        / "references"
+        / "reference-manifest.json"
+    )
     try:
-        date.fromisoformat(text_value(evidence.get("checked_date")))
+        expected_manifest_digest = hashlib.sha256(
+            local_manifest.read_bytes()
+        ).hexdigest()
+    except OSError:
+        expected_manifest_digest = ""
+    if manifest_digest != expected_manifest_digest:
+        missing.append("current local manifest_sha256")
+    try:
+        checked_at = datetime.fromisoformat(
+            text_value(authority.get("checked_at")).replace("Z", "+00:00")
+        )
+        if checked_at.tzinfo is None:
+            raise ValueError
+        now = datetime.now(timezone.utc)
+        checked_date = checked_at.astimezone(timezone.utc).date()
+        if checked_date != now.date():
+            missing.append("fresh checked_at")
+        if checked_at.astimezone(timezone.utc) > now:
+            missing.append("non-future checked_at")
     except ValueError:
-        missing.append("valid checked_date")
-    if "nodis3.gsfc.nasa.gov" not in text_value(evidence.get("nodis_url")):
-        missing.append("official NODIS URL")
+        missing.append("valid timezone-aware checked_at")
     if missing:
         add(
             issues,
@@ -1653,7 +1741,11 @@ def check_npr_authority(
         "NPR-AUTH-002",
         "PASS",
         "NPR-7123.1D-C2 sections 1.3, 2.1, 2.2, and Appendix D",
-        "Declared NPR process-evidence fields are present. Authorized reviewers remain responsible for applicability and sufficiency.",
+        "The canonical, current NODIS authority record and declared NPR process-evidence fields are present. Authorized reviewers remain responsible for applicability and sufficiency.",
+        (
+            f"response_sha256={authority['response_sha256']}; "
+            f"manifest_sha256={authority['manifest_sha256']}"
+        ),
     )
     return True
 
@@ -2099,8 +2191,18 @@ def evaluate(document: dict[str, Any]) -> dict[str, Any]:
     check_reviews(document, digest, lifecycle_profile, issues)
     approval_valid = check_approval(document, digest, issues)
     status = derive_status(issues, approval_valid)
+    release_permitted = status == STATUS_BASELINED
+    state_codes = {
+        STATUS_DRAFT: "DRAFT",
+        STATUS_FAILED: "CHECK_FAILED",
+        STATUS_READY: "BASELINE_REVIEW",
+        STATUS_BASELINED: "BASELINED",
+    }
     return {
         "status": status,
+        "state_code": state_codes[status],
+        "operation_succeeded": True,
+        "release_permitted": release_permitted,
         "content_digest": digest,
         "summary": {
             result: sum(1 for issue in issues if issue.result == result)
@@ -2118,7 +2220,7 @@ def evaluate(document: dict[str, Any]) -> dict[str, Any]:
             "lifecycle_evidence": lifecycle_valid,
             "npr_authority_evidence": npr_authority_valid,
             "authorized_baseline_approval": approval_valid,
-            "clean_output_permitted": status == STATUS_BASELINED,
+            "clean_output_permitted": release_permitted,
         },
         "issues": [asdict(issue) for issue in issues],
         "traceability_matrix": make_matrix(requirements, language_profile),
@@ -2144,6 +2246,12 @@ def render_markdown(report: dict[str, Any]) -> str:
         "# Requirements artifact report",
         "",
         f"Status: `{report['status']}`",
+        "",
+        f"State code: `{report['state_code']}`",
+        "",
+        f"Operation succeeded: `{str(report['operation_succeeded']).lower()}`",
+        "",
+        f"Release permitted: `{str(report['release_permitted']).lower()}`",
         "",
         f"Content digest: `{report['content_digest']}`",
         "",
@@ -2269,7 +2377,14 @@ def template(
             "excluded_processes": [],
         },
         "source_authorities": [
-            {"id": "SRC-001", "title": "Authoritative source", "precedence": 1}
+            {
+                "id": "SRC-001",
+                "title": "Authoritative source",
+                "revision": "",
+                "location": "",
+                "precedence": 1,
+                "digest_unavailable_reason": "",
+            }
         ],
         "controlled_terms": [],
         "protected_values": [],
@@ -2336,9 +2451,18 @@ def template(
         )
     if lifecycle_profile == "nasa-npr-7123.1d":
         document["npr_process_evidence"] = {
-            "nodis_url": "",
-            "checked_date": "",
-            "directive_identifier": "",
+            "current_authority_record": {
+                "reference_id": "NPR-7123.1D-C2",
+                "directive_identifier": "NPR 7123.1D Updated with Change 2",
+                "result": "",
+                "checked_at": "",
+                "authority_url": "",
+                "observed_markers": [],
+                "missing_markers": [],
+                "expired": "",
+                "response_sha256": "",
+                "manifest_sha256": "",
+            },
             "applicability": "",
             "complete_compliance_matrix": "",
             "compliance_matrix_digest": "",
@@ -2352,15 +2476,54 @@ def template(
     return document
 
 
-def write_clean_output(document: dict[str, Any], path: Path) -> None:
+def write_clean_output(
+    document: dict[str, Any], path: Path, overwrite: bool
+) -> None:
     requirements = document.get("requirements", [])
     lines = [
         f"{text_value(item.get('id'))} {text_value(item.get('text'))}"
         for item in requirements
         if isinstance(item, dict)
     ]
+    write_output(path, "\n".join(lines) + "\n", overwrite)
+
+
+def write_output(path: Path, text: str, overwrite: bool) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if path.exists() and not overwrite:
+        raise ValueError(
+            f"Output already exists: {path}. Use --overwrite to replace it."
+        )
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as stream:
+            stream.write(text)
+            stream.flush()
+            os.fsync(stream.fileno())
+            temporary_path = Path(stream.name)
+        if overwrite:
+            os.replace(temporary_path, path)
+        else:
+            try:
+                os.link(temporary_path, path)
+            except FileExistsError as exc:
+                raise ValueError(
+                    f"Output already exists: {path}. Use --overwrite to replace it."
+                ) from exc
+    except ValueError:
+        raise
+    except OSError as exc:
+        raise ValueError(f"Cannot write output {path}: {exc}") from exc
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -2373,6 +2536,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace an existing output file. By default, outputs are immutable.",
+    )
     parser.add_argument(
         "--emit-template", choices=("shall", "bcp14"), metavar="LANGUAGE_PROFILE"
     )
@@ -2400,8 +2568,11 @@ def main() -> int:
             allow_unicode=True,
         )
         if args.output:
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(rendered, encoding="utf-8")
+            try:
+                write_output(args.output, rendered, args.overwrite)
+            except ValueError as exc:
+                print(f"error: {exc}", file=sys.stderr)
+                return 2
         else:
             sys.stdout.write(rendered)
         return 0
@@ -2424,23 +2595,44 @@ def main() -> int:
 
     json_text = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
     markdown_text = render_markdown(report)
-    if args.format == "both":
-        args.output_dir.mkdir(parents=True, exist_ok=True)
-        (args.output_dir / "requirements-report.json").write_text(
-            json_text, encoding="utf-8"
-        )
-        (args.output_dir / "requirements-report.md").write_text(
-            markdown_text, encoding="utf-8"
-        )
-        print(report["status"])
-        print(report["content_digest"])
-    else:
-        rendered = json_text if args.format == "json" else markdown_text
-        if args.output:
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(rendered, encoding="utf-8")
+    digest_prefix = report["content_digest"].removeprefix("sha256:")[:12]
+    try:
+        if args.format == "both":
+            json_path = args.output_dir / f"requirements-report-{digest_prefix}.json"
+            markdown_path = args.output_dir / f"requirements-report-{digest_prefix}.md"
+            existing = [
+                path for path in (json_path, markdown_path)
+                if path.exists() and not args.overwrite
+            ]
+            if existing:
+                raise ValueError(
+                    "Output already exists: "
+                    + ", ".join(str(path) for path in existing)
+                    + ". Use --overwrite to replace it."
+                )
+            created: list[Path] = []
+            try:
+                write_output(json_path, json_text, args.overwrite)
+                if not args.overwrite:
+                    created.append(json_path)
+                write_output(markdown_path, markdown_text, args.overwrite)
+                if not args.overwrite:
+                    created.append(markdown_path)
+            except ValueError:
+                for path in created:
+                    path.unlink(missing_ok=True)
+                raise
+            print(report["status"])
+            print(report["content_digest"])
         else:
-            sys.stdout.write(rendered)
+            rendered = json_text if args.format == "json" else markdown_text
+            if args.output:
+                write_output(args.output, rendered, args.overwrite)
+            else:
+                sys.stdout.write(rendered)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
 
     if args.clean_output:
         if report["status"] != STATUS_BASELINED:
@@ -2449,7 +2641,11 @@ def main() -> int:
                 file=sys.stderr,
             )
             return 1
-        write_clean_output(document, args.clean_output)
+        try:
+            write_clean_output(document, args.clean_output, args.overwrite)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
 
     if report["status"] in {STATUS_DRAFT, STATUS_FAILED}:
         return 1
