@@ -481,18 +481,23 @@ class RequirementsCheckerTests(unittest.TestCase):
         )
 
     def test_source_authority_rejects_placeholder_revision(self) -> None:
-        document = valid_document()
-        document["source_authorities"][0]["revision"] = "not provided"
-        report = CHECKER.evaluate(document)
-        self.assert_has(report, "REQ-SRC-001", "FAIL")
-        self.assertFalse(
-            any(
-                issue["location"] == "source_authorities[0]"
-                and issue["result"] == "PASS"
-                and "revision-bound" in issue["message"]
-                for issue in report["issues"]
-            )
-        )
+        for missing_revision in (
+            "not provided",
+            "The source revision is not currently authorized; none was added.",
+        ):
+            with self.subTest(missing_revision=missing_revision):
+                document = valid_document()
+                document["source_authorities"][0]["revision"] = missing_revision
+                report = CHECKER.evaluate(document)
+                self.assert_has(report, "REQ-SRC-001", "FAIL")
+                self.assertFalse(
+                    any(
+                        issue["location"] == "source_authorities[0]"
+                        and issue["result"] == "PASS"
+                        and "revision-bound" in issue["message"]
+                        for issue in report["issues"]
+                    )
+                )
 
     def test_each_absent_decision_authority_requires_complete_wording(
         self,

@@ -25,7 +25,8 @@ approve tailoring or make an organizational compliance decision.
   64-character lowercase SHA-256 `digest`. If source bytes are not available,
   omit `digest` and give a checkable `digest_unavailable_reason`. Do not provide
   both. Placeholder identity values such as `not provided`, `unknown`, and
-  `unavailable` do not satisfy `revision` or `location`.
+  `unavailable` do not satisfy `revision` or `location`. A bounded absence
+  statement records the gap but is not a source identity value.
 - `source_transformations`: records that map an exact source clause to a
   proposed requirement interpretation, list each added or removed condition,
   and identify the authority for the transformation

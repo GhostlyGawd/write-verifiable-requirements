@@ -80,6 +80,7 @@ for every separate authority gap in the same report.
 The next independent review found four shortened `decision_authority` fields
 and three source records whose `revision` value was `not provided`. The checker
 had treated those placeholder revisions as valid and described the records as
-revision-bound. The checker now rejects placeholder source identity values and
-requires the complete bounded absence statement in every separate
+revision-bound. The checker now rejects placeholder source identity values,
+including a full bounded absence statement used in place of an identity. It
+also requires the complete bounded absence statement in every separate
 `decision_authority` field. Two regression tests reproduce these failures.

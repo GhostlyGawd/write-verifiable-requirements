@@ -347,11 +347,21 @@ def check_sources(
         title = text_value(authority.get("title"))
         revision = text_value(authority.get("revision"))
         source_location = text_value(authority.get("location"))
+        revision_normalized = revision.casefold()
+        location_normalized = source_location.casefold()
         revision_is_missing = (
-            revision.casefold() in MISSING_SOURCE_IDENTITY_VALUES
+            revision_normalized in MISSING_SOURCE_IDENTITY_VALUES
+            or any(
+                clause in revision_normalized
+                for clause in AUTHORITY_ABSENCE_CLAUSES
+            )
         )
         location_is_missing = (
-            source_location.casefold() in MISSING_SOURCE_IDENTITY_VALUES
+            location_normalized in MISSING_SOURCE_IDENTITY_VALUES
+            or any(
+                clause in location_normalized
+                for clause in AUTHORITY_ABSENCE_CLAUSES
+            )
         )
         source_digest = text_value(authority.get("digest"))
         digest_unavailable_reason = text_value(
