@@ -57,6 +57,7 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertNotIn("self-hosted", workflow)
         self.assertNotIn("actions/cache", workflow)
         self.assertNotIn("upload-artifact", workflow)
+        self.assertNotIn("cache: false", workflow)
 
     def test_license_and_alignment_claims_are_truthful(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
