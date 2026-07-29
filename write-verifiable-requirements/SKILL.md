@@ -10,7 +10,9 @@ legal, technical, tailoring, or approval decisions.
 
 ## Required workflow
 
-1. Load [requirements-rules.yaml](references/requirements-rules.yaml),
+1. Run `python scripts/manage_references.py status`. Load
+   [reference-manifest.json](references/reference-manifest.json),
+   [requirements-rules.yaml](references/requirements-rules.yaml),
    [requirements-schema.md](references/requirements-schema.md), and
    [nasa-reference-coverage.yaml](references/nasa-reference-coverage.yaml).
 2. Select `write`, `rewrite`, `review`, or `trace`.
@@ -18,10 +20,12 @@ legal, technical, tailoring, or approval decisions.
 4. Confirm source authorities and precedence, objective, boundary, readers,
    product layer, lifecycle phase, controlled terms, protected values,
    constraints, and approval authority.
-5. For a NASA lifecycle profile, use the bundled authorized
+5. For a NASA lifecycle profile, require a passing local reference status and
+   use the bundled
    [handbook](references/nasa-systems-engineering-handbook-rev2.pdf). For an NPR
-   assessment, also use the bundled [NPR](references/npr-7123.1d-change-2.pdf)
-   and verify its current NODIS status.
+   assessment, also use the bundled [NPR](references/npr-7123.1d-change-2.pdf).
+   Run `python scripts/manage_references.py check-current` before a current-NPR
+   claim. This explicit command accesses NODIS.
 6. Elicit stakeholder expectations before technical requirements. Separate
    needs, goals, objectives, ConOps, MOEs, constraints, and assumptions from
    binding requirements.
@@ -106,3 +110,17 @@ or approval is uncertain:
 Scripts verify structure and selected patterns only. They do not prove semantic
 correctness, completeness, feasibility, safety, technical validation, or NASA
 procedural compliance.
+
+## Reference operations
+
+- Normal writing and review use verified local files. Do not access the network
+  during ordinary skill execution.
+- If `status` fails, the `general` profile can continue without a NASA claim.
+  Block the affected NASA profile.
+- Run `python scripts/manage_references.py repair` only for an explicit repair.
+  It downloads only approved bytes from manifest-listed HTTPS hosts, verifies
+  size, PDF signature, and SHA-256, and installs atomically.
+- Never change a manifest digest automatically. Stage and review new NASA bytes,
+  update the rule mapping, and rerun all acceptance tests before approval.
+- A matching PDF digest proves document identity. It does not prove that an NPR
+  is current, applicable, tailored, or satisfied.

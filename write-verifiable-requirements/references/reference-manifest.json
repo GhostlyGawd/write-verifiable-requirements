@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "write-verifiable-requirements",
+  "verified_on": "2026-07-28",
+  "documents": [
+    {
+      "id": "NASA-SEH-REV2",
+      "title": "NASA Systems Engineering Handbook",
+      "identifier": "NASA/SP-2016-6105 Rev 2",
+      "authority_type": "guidance",
+      "local_path": "nasa-systems-engineering-handbook-rev2.pdf",
+      "size_bytes": 3773440,
+      "sha256": "8eeb4887a4dc57a23049da7dd2ed556833cf98e214b240468d987873164ff688",
+      "pdf_signature": "%PDF-",
+      "official_landing_page": "https://ntrs.nasa.gov/citations/20170001761",
+      "canonical_download_url": "https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf",
+      "allowed_hosts": [
+        "ntrs.nasa.gov",
+        "www.nasa.gov"
+      ],
+      "distribution_basis": {
+        "classification": "Public",
+        "statement": "Public Use Permitted",
+        "source": "https://ntrs.nasa.gov/citations/20170001761"
+      }
+    },
+    {
+      "id": "NPR-7123.1D-C2",
+      "title": "NASA Systems Engineering Processes and Requirements",
+      "identifier": "NPR 7123.1D Updated with Change 2",
+      "authority_type": "directive",
+      "local_path": "npr-7123.1d-change-2.pdf",
+      "size_bytes": 4261850,
+      "sha256": "686b0d55d492bffe7e750a15523f339c5de41cb253499828b4fe9f2924810e40",
+      "pdf_signature": "%PDF-",
+      "official_landing_page": "https://nodis3.gsfc.nasa.gov/displayDir.cfm?Internal_ID=N_PR_7123_001D_",
+      "canonical_download_url": "https://nodis3.gsfc.nasa.gov/npg_img/N_PR_7123_001D_/N_PR_7123_001D_.pdf",
+      "allowed_hosts": [
+        "nodis3.gsfc.nasa.gov"
+      ],
+      "effective_date": "2023-07-05",
+      "expiration_date": "2028-07-05",
+      "expected_status_markers": [
+        "NPR 7123.1D",
+        "Effective Date: July 05, 2023",
+        "Expiration Date: July 05, 2028",
+        "Updated w/Change 2"
+      ],
+      "distribution_basis": {
+        "classification": "NODIS",
+        "statement": "Official NASA directive distributed through NODIS; current status must be checked before use.",
+        "source": "https://nodis3.gsfc.nasa.gov/displayDir.cfm?Internal_ID=N_PR_7123_001D_"
+      }
+    }
+  ]
+}
